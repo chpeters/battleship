@@ -1,18 +1,34 @@
-import React, { Component } from 'react';
-import logo from './logo.svg';
-import './App.css';
+import React, { Component } from 'react'
+import './App.css'
+import Grid from '../Grid'
+import MessageSection from '../MessageSection'
+
+const arr = [
+  'empty','empty','empty','empty','empty','empty','empty','empty','empty','empty',
+  'empty','empty','empty','empty','empty','empty','empty','empty','empty','empty',
+  'empty','empty','empty','empty','empty','empty','empty','empty','empty','empty',
+  'empty','empty','empty','empty','empty','empty','empty','empty','empty','empty',
+  'empty','empty','empty','empty','empty','empty','empty','empty','empty','empty',
+  'empty','empty','empty','empty','empty','empty','empty','empty','empty','empty',
+  'empty','empty','empty','empty','empty','empty','empty','empty','empty','empty',
+  'empty','empty','empty','empty','empty','empty','empty','empty','empty','empty',
+  'empty','empty','empty','empty','empty','empty','empty','empty','empty','empty',
+  'empty','empty','empty','empty','empty','empty','empty','empty','empty','empty'
+]
+const msgs = [
+  {text: 'Hello there!', type: 'self'},
+  {text: 'Yooo!', type: 'opponent'},
+  {text: 'Do you want to play battleship! This is a really long message that should line wrap a few times', type: 'self'}
+]
 
 class App extends Component {
   render() {
     return (
-      <div className="App">
-        <header className="App-header">
-          <img src={logo} className="App-logo" alt="logo" />
-          <h1 className="App-title">Welcome to Battleship</h1>
-        </header>
-        <p className="App-intro">
-          To get started, edit <code>src/App.js</code> and save to reload.
-        </p>
+      <div className='container'>
+        <div className='table'>
+          <Grid size={300} elements={arr} />
+        </div>
+        <MessageSection messages={msgs}/>
       </div>
     );
   }
