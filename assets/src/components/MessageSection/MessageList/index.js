@@ -4,6 +4,12 @@ import Message from './Message'
 
 // Message: [{{type, text}}]
 const MessageList = ({messages}) => {
+	const styles = {
+		backgroundColor: 'white',
+		borderRadius: '3px',
+		margin: '20px'
+	}
+
 	var index = 0
 	const msgs = messages.map((msg) => {
 		index++
@@ -13,7 +19,7 @@ const MessageList = ({messages}) => {
 			</div>
 		)
 	})
-	return (<div>{msgs}</div>)
+	return (<div style={styles}>{msgs}</div>)
 }
 
 MessageList.propTypes = {

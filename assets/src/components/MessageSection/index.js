@@ -14,11 +14,12 @@ const MessageSection = ({messages}) => {
 	const messageBoxStyle = {
 		'margin': '0 auto',
 		'display': 'block',
-		'width': '50%',
+		'width': '80%',
 		'height': '50px',
 		'border': 'none',
 		'padding': '10px',
-		'fontSize': '16px'
+		'fontSize': '16px',
+		borderRadius: '3px'
 	}
 
 	return (
