@@ -1,15 +1,16 @@
-import PropTypes from 'prop-types'
 import React from 'react'
+import { connect } from 'react-redux'
 
-const Square = ({size, type}) => {
+const Square = (props) => {
 	const styles = {
-		'width': size,
-		'height': size,
+		'width': props.size,
+		'height': props.size,
 		'border': '1px solid black',
-		'backgroundColor': 'grey'
+		'backgroundColor': 'grey',
+		display: props.inline ? 'inline-block' : 'block'
 	}
 
-	switch (type) {
+	switch (props.type) {
 		case 'hit':
 			styles.backgroundColor = 'red'
 			break
@@ -26,13 +27,16 @@ const Square = ({size, type}) => {
 			styles.backgroundColor = 'grey'
 	}
 
-	return (<div style={styles}></div>)
+	return (<div onClick={() => props.clickedSquare(props.loc)} style={styles}></div>)
 }
 
-
-Square.propTypes = {
-	size: PropTypes.number,
-	type: PropTypes.oneOf(['hit','miss','ship','hover','empty'])
+const mapDispatchToProps = dispatch => {
+  return {
+    clickedSquare : (key) => dispatch({type: 'SQUARE_CLICKED', loc: key})
+  }
 }
 
-export default Square
+export default connect(
+	(state) => state,
+	mapDispatchToProps
+)(Square)

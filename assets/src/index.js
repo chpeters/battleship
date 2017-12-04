@@ -1,21 +1,28 @@
 import React from 'react';
 import { render } from 'react-dom';
-import thunkMiddleware from 'redux-thunk';
 import { createStore, applyMiddleware } from 'redux';
 import { Provider } from 'react-redux';
-import {createLogger} from 'redux-logger';
+import thunk from 'redux-thunk'
+import logger from 'redux-logger';
 import App from './components/App/App.js';
 import reducers from './reducers';
 import './index.css';
+import registerServiceWorker from './registerServiceWorker'
 
-const loggerMiddleware = createLogger();
+const initialState = {}
 
-const createStoreWithMiddleware = applyMiddleware(
-  thunkMiddleware,
-  loggerMiddleware
-)(createStore);
+const middleware = [
+	thunk,
+	logger
+]
 
-const store = createStoreWithMiddleware(reducers);
+const enhancers = applyMiddleware(...middleware)
+
+const store = createStore(
+	reducers,
+	initialState,
+	enhancers
+)
 
 render(
   <Provider store={store}>
@@ -23,3 +30,5 @@ render(
   </Provider>,
   document.getElementById('root')
 );
+
+registerServiceWorker()

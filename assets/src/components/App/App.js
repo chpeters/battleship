@@ -1,5 +1,8 @@
-import React, { Component } from 'react'
+import React from 'react'
+import { connect } from 'react-redux'
 import './App.css'
+import Home from '../Home'
+import Table from '../Table'
 // import Grid from '../Grid'
 // import MessageSection from '../MessageSection'
 
@@ -33,17 +36,24 @@ import './App.css'
 //     );
 //   }
 // }
+//<Ships sizes={[5, 4, 3, 3, 2]} placed={[false,false,false,false,false]} orientation={'vertical'}/>
 
-class App extends Component {
+class App extends React.Component {
   render() {
-    return (
-      <div className='container'>
-        <h1 style={{textAlign: 'center'}}>Battleship</h1>
-        <div style={{maxWidth: '300px', margin: '0 auto'}}><label for='code'>Input Table Code: </label><input type='text'/></div>
-        <button style={{margin: '15px auto', display: 'block'}} type="button">New Table</button>
-      </div>
-    );
+  	console.log(this.props)
+    switch (this.props.table.gameState) {
+    	case 'home':
+    		return (<Home />)
+    	case 'table':
+    		return (<Table tableCode={this.props.table.code}/>)
+      case 'waiting':
+        return (<Table tableCode={this.props.table.code}/>)
+    	default:
+    		return (<Home />)
+    }
   }
 }
 
-export default App;
+export default connect(
+	(state) => state
+)(App);

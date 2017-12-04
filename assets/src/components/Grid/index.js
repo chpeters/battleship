@@ -11,11 +11,11 @@ const Grid = ({size, elements}) => {
 		'gridAutoRows': 'auto',
 		'border': '1px solid black',
 	}
-	var index = 0
+	var index = -1
 	const cellSize = Math.floor(size / 10)
 	const cells = elements.map((e) => {
 		index++
-		return <Square key={index} size={cellSize} type={e} />
+		return <Square key={index} loc={index} size={cellSize} type={e} />
 	})
 	
 	return (<div style={styles}>{cells}</div>)
