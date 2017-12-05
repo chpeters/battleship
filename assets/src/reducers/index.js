@@ -18,6 +18,10 @@ const tableInitialState = {
   gameState: 'home',
   code: null,
   boardSelf: defaultBoard,
+  boardOpp: null,
+  shotSelf: null,
+  shotOpp: null,
+  message: '',
   orientation: 'horizontal',
   sizes: [5, 4, 3, 3, 2],
   selected: 0
@@ -65,22 +69,130 @@ function table(state = tableInitialState, action) {
       if (action.loc >= 10) {
         coord = [parseInt(action.loc.toString().substring(0,1)), action.loc%10]
       }
-      console.log(coord)
       return { ...state, ...placeShipIfValid(coord, state.boardSelf, state.orientation, state.sizes, state.selected)}
     case 'RESET_SHIPS':
       return {...state, boardSelf: defaultBoard, selected: 0, orientation: 'horizontal'}
     case 'START_GAME':
+      if (state.boardOpp) {
+        return {...state, gameState: 'shooting'}
+      }
       return {...state, gameState: 'waiting'}
+    case 'RECEIVE_BOARD':
+      if (state.gameState === 'waiting') {
+        return {...state, boardOpp: action.board, gameState: 'shooting'}
+      }
+      else return {...state, boardOpp: action.board}
+
+
+
+    case 'FIRED_SHOT':
+      if(state.shotOpp !== null) {
+
+        const theirSquareType = state.boardOpp[action.loc]
+        const yourSquareType = state.boardSelf[state.shotOpp]
+
+        let messageSelf = ""
+        if (theirSquareType === 'ship') {
+          messageSelf = "Hit! Fire Again! "
+          state.boardOpp[action.loc] = 'hit'
+        }
+        else {
+          messageSelf = "Missed! Fire Again! "
+          state.boardOpp[action.loc] = 'miss'
+        }
+
+        let messageTheir = ""
+        if (yourSquareType === 'ship') {
+          messageTheir = "You were hit last turn, be careful!"
+          state.boardSelf[state.shotOpp] = 'hit'
+        }
+        else {
+          messageTheir = "They missed last turn, take advantage!"
+          state.boardSelf[state.shotOpp] = 'miss'
+        }
+
+        let message = messageSelf + messageTheir
+
+        if (gameOver(state.boardOpp) && gameOver(state.boardSelf)) {
+          message = "Wow, thats rare; You tied!"
+          return {...tableInitialState, gameState: 'gameOver', message: message}
+        }
+        else if (gameOver(state.boardSelf)) {
+          message = "Oooh so close, you lost!"
+          return {...tableInitialState, gameState: 'gameOver', message: message}
+        }
+        else if (gameOver(state.boardOpp)) {
+          message = "Congratulations, you won!"
+          return {...tableInitialState, gameState: 'gameOver', message: message}
+        }
+        else {
+          console.log("got to right fire")
+          return {...state, gameState: 'shooting', boardSelf: state.boardSelf,
+                  boardOpp: state.boardOpp, message: message, shotOpp: null, shotSelf: null}
+        }
+
+      }
+      return {...state, gameState: 'waiting', shotSelf: action.loc}
+
+    case 'RECEIVE_SHOT':
+      if (state.shotSelf !==  null) {
+        
+        const theirSquareType = state.boardOpp[state.shotSelf]
+        const yourSquareType = state.boardSelf[action.loc]
+
+        let messageSelf = ""
+        if (theirSquareType === 'ship') {
+          messageSelf = "Hit! Fire Again! "
+          state.boardOpp[state.shotSelf] = 'hit'
+        }
+        else {
+          messageSelf = "Missed! Fire Again! "
+          state.boardOpp[state.shotSelf] = 'miss'
+        }
+
+        let messageTheir = ""
+        if (yourSquareType === 'ship') {
+          messageTheir = "You were hit last turn, be careful!"
+          state.boardSelf[action.loc] = 'hit'
+        }
+        else {
+          messageTheir = "They missed last turn, take advantage!"
+          state.boardSelf[action.loc] = 'miss'
+        }
+
+        let message = messageSelf + messageTheir
+
+        if (gameOver(state.boardOpp) && gameOver(state.boardSelf)) {
+          message = "Wow, thats rare; You tied!"
+          return {...tableInitialState, gameState: 'gameOver', message: message}
+        }
+        else if (gameOver(state.boardSelf)) {
+          message = "Oooh so close, you lost!"
+          return {...tableInitialState, gameState: 'gameOver', message: message}
+        }
+        else if (gameOver(state.boardOpp)) {
+          message = "Congratulations, you won!"
+          return {...tableInitialState, gameState: 'gameOver', message: message}
+        }
+        else {
+          console.log("got to right receive")
+          return {...state, gameState: 'shooting', boardSelf: state.boardSelf,
+                  boardOpp: state.boardOpp, message: message, shotOpp: null, shotSelf: null}
+        }
+
+      }
+      return  {...state, shotOpp: action.loc}
+
     default:
       return state
   }
 }
 
-function gameState(state = 'home', action) {
-  return state
+function gameOver(board) {
+  return board.filter((e) => e==='ship').length==0
 }
 
-function messages(state = [], action) {
+function gameState(state = 'home', action) {
   return state
 }
 
@@ -101,9 +213,35 @@ function isLoading(state = false, action) {
   }
 }
 
+const initialChannelState = {
+  loading: false,
+  messages: [],
+  channel: {},
+  error: null,
+}
+
+function channel(state = initialChannelState, action) {
+  switch (action.type) {
+    case "JOIN_ATTEMPT":
+      return {...state, loading: true}
+    case "JOIN_FAIL":
+      return {...state, loading: false}
+    case "JOIN_SUCCESS":
+      return {...state, loading: false, channel: action.channel}
+    case "NEW_MESSAGE":
+      return {...state, messages: state.messages.concat({text: action.message, type: 'opponent'})}
+    case "SEND_MESSAGE":
+      return {...state, messages: state.messages.concat({text: action.message, type: 'self'})}
+    case 'START_GAME':
+      return {...state}
+    default:
+      return state
+  }
+}
+
 const reducers = combineReducers({
   table: table,
-  messages: messages,
+  channel: channel,
   gameState: gameState,
   isLoading: isLoading
 });

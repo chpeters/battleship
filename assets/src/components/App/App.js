@@ -40,7 +40,6 @@ import Table from '../Table'
 
 class App extends React.Component {
   render() {
-  	console.log(this.props)
     switch (this.props.table.gameState) {
     	case 'home':
     		return (<Home />)
@@ -48,6 +47,10 @@ class App extends React.Component {
     		return (<Table tableCode={this.props.table.code}/>)
       case 'waiting':
         return (<Table tableCode={this.props.table.code}/>)
+      case 'shooting':
+        return (<Table tableCode={this.props.table.code}/>)
+      case 'gameOver':
+        return <Table tableCode={this.props.table.code}/>
     	default:
     		return (<Home />)
     }

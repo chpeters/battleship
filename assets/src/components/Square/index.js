@@ -1,5 +1,6 @@
 import React from 'react'
 import { connect } from 'react-redux'
+import * as actions from '../../actions/channel'
 
 const Square = (props) => {
 	const styles = {
@@ -27,12 +28,12 @@ const Square = (props) => {
 			styles.backgroundColor = 'grey'
 	}
 
-	return (<div onClick={() => props.clickedSquare(props.loc)} style={styles}></div>)
+	return (<div onClick={() => props.clickedSquare(props.channel.channel, props.table.gameState, props.loc)} style={styles}></div>)
 }
 
 const mapDispatchToProps = dispatch => {
   return {
-    clickedSquare : (key) => dispatch({type: 'SQUARE_CLICKED', loc: key})
+    clickedSquare : (channel, gameState, loc) => dispatch(actions.squareClicked(channel, gameState, loc))
   }
 }
 
